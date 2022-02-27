@@ -1,6 +1,7 @@
 
-import React, { useContext, useReducer, useEffect, useRef, useState, createContext, Component } from 'react';
+import React, { useContext, useReducer, useEffect, useRef, useState, createContext, Component, Fragment } from 'react';
 import { useForm } from 'react-hook-form';
+import Formulario from './components/Formulario';
 
 const HOST_API = "http://localhost:8080/categoria";
 const initialState = {
@@ -53,7 +54,6 @@ const Form = () => {
     })
       .then(response => response.json())
       .then((categoria) => {
-        console.log(request)
         dispatch({ type: "update-item", item: categoria });
         setState({ nombre: "",id:"", todo:[] });
         formRef.current.reset();
@@ -71,7 +71,7 @@ const Form = () => {
         setState({ ...state, name: event.target.value })
       }}  ></input>
     {item.id && <button onClick={onEdit} className="btn btn-primary">Actualizar</button>}
-    {!item.id && <button onClick={onAdd}>Crear</button>}
+    {!item.id && <button onClick={onAdd} className="btn btn-success">Crear</button>}
   </form>
 
 } 
@@ -121,12 +121,13 @@ const List = () => {
   const decorationDone = {
     textDecoration: 'line-through'
   };
-  return <div>
-    <table >
+  var styless = {color: "black", border:"4px solid purple"}
+  return <div className="panel panel-default">
+    <table className="table">
       <thead>
         <tr>
-          <td>ID</td>
-          <td>Tarea</td>
+          <td></td>
+          <td></td>
         </tr>
       </thead>
       <tbody>
@@ -134,15 +135,18 @@ const List = () => {
         {currentList.map((categoria) => {
           var styles = {color: "purple", fontSize: 15, border:"2px solid purple"}
           return <div>
-          <tr key={categoria.id} style={styles}>
+          <tr key={categoria.id}  style={styless}>
             <td key={categoria.id}>{categoria.id}</td>
             <td onClick={()=> console.log("Hiciste click "+categoria.nombre)}>{categoria.nombre}</td>
-            <td><button onClick={() => onDelete(categoria.id)}>Eliminar</button></td>
-            <td><button onClick={() => {
+            <td><button className="btn btn-danger mx-3" onClick={() => onDelete(categoria.id)}>Eliminar</button></td>
+            <td><button className='btn btn-primary' onClick={() => {
               return onEdit(categoria)}}>Editar</button></td>
+              
+              
           </tr>
+          <Formulario Categoria={categoria.nombre}/>
+           </div>
           
-          </div> 
         })}
       </tbody>
     </table>
@@ -166,25 +170,21 @@ function reducer(state, action) {
     case 'delete-item':
       const categoriaUpDelete = state.categoria;
       const listUpdate = categoriaUpDelete.list.filter((item) => {
-        console.log("delete-item");
         return item.id !== action.id;
       });
       categoriaUpDelete.list = listUpdate;
       return { ...state, categoria: categoriaUpDelete }
     case 'update-list':
-      console.log(state.categoria);
       const categoriaUpList = state.categoria;
       categoriaUpList.list = action.list;
       return { ...state, categoria: categoriaUpList }
     case 'edit-item':
-      console.log(state.categoria);
       const categoriaUpEdit = state.categoria;
       categoriaUpEdit.item = action.item;
       return { ...state, categoria: categoriaUpEdit }
     case 'add-item':
       const categoriaUp = state.categoria.list;
       categoriaUp.push(action.item);
-      console.log("push-item");
       return { ...state, categoria: {list: categoriaUp, item: {}} }
     default:
       return state;

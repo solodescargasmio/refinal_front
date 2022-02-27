@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useEffect, useRef, useState, createContext, Component } from 'react';
+import React, { useContext, useReducer, useEffect, useRef, useState, createContext, Fragment } from 'react';
 
 
 const HOST_API = "http://localhost:8080/categoria/todo";
@@ -7,7 +7,7 @@ const initialState = {
 };
 const Store = createContext(initialState)
 
-const Form = () => {
+const FormT = () => {
   const formRef = useRef(null);
   const { dispatch, state: { todo } } = useContext(Store);
   const item = todo.item;
@@ -33,7 +33,6 @@ const Form = () => {
     })
       .then(response => response.json())
       .then((todo) => {
-        console.log(request)
         dispatch({ type: "add-item", item: todo });
         setState({ name: "",id:"", categoria:"" });
         formRef.current.reset();
@@ -57,7 +56,6 @@ const Form = () => {
     })
       .then(response => response.json())
       .then((todo) => {
-        console.log(request)
         dispatch({ type: "update-item", item: todo });
         setState({ name: "",id:"", categoria:"" });
         formRef.current.reset();
@@ -75,15 +73,16 @@ const Form = () => {
         setState({ ...state, name: event.target.value })
       }}  ></input>
     {item.id && <button onClick={onEdit} className="btn btn-primary">Actualizar</button>}
-    {!item.id && <button onClick={onAdd}>Crear</button>}
+    {!item.id && <button onClick={onAdd} className="btn btn-success">Crear</button>}
+    <List />
   </form>
 
 } 
 
-const List = () => {
+const List = (categoria) => {
   const { dispatch, state: { todo } } = useContext(Store);
   const currentList = todo.list;
-
+console.log(categoria.nombre);
   useEffect(() => {
     fetch(HOST_API)
       .then(response => response.json())
@@ -126,7 +125,7 @@ const List = () => {
   const decorationDone = {
     textDecoration: 'line-through'
   };
-  return <div>
+  return <div className='container'>
     <table >
       <thead>
         <tr>
@@ -143,9 +142,9 @@ const List = () => {
             <td key={todo.id}>{todo.id}</td>
             <td><input type="checkbox" defaultChecked={todo.completed} onChange={(event) => onChange(event, todo)}></input></td>
             <td onClick={()=> console.log("Hiciste click "+todo.name)}>{todo.name}</td>
-            <td><button onClick={() => onDelete(todo.id)}>Eliminar</button></td>
+            <td><button onClick={() => onDelete(todo.id)} className="btn btn-warning mx-3">Eliminar</button></td>
             <td><button onClick={() => {
-              return onEdit(todo)}}>Editar</button></td>
+              return onEdit(todo)}} className="btn btn-primary">Editar</button></td>
           </tr>
         })}
       </tbody>
@@ -169,13 +168,11 @@ function reducer(state, action) {
     case 'delete-item':
       const todoUpDelete = state.todo;
       const listUpdate = todoUpDelete.list.filter((item) => {
-        console.log("delete-item");
         return item.id !== action.id;
       });
       todoUpDelete.list = listUpdate;
       return { ...state, todo: todoUpDelete }
     case 'update-list':
-      console.log(state.todo);
       const todoUpList = state.todo;
       todoUpList.list = action.list;
       return { ...state, todo: todoUpList }
@@ -204,8 +201,7 @@ const StoreProvider = ({ children }) => {
 
 const Formulario=()=>{
   return(<StoreProvider>
-    <Form />
-    <List />
+    <FormT />
    
   </StoreProvider>);
 }
