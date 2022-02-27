@@ -79,10 +79,9 @@ const FormT = () => {
 
 } 
 
-const List = (categoria) => {
+const List = () => {
   const { dispatch, state: { todo } } = useContext(Store);
   const currentList = todo.list;
-console.log(categoria.nombre);
   useEffect(() => {
     fetch(HOST_API)
       .then(response => response.json())
@@ -107,6 +106,7 @@ console.log(categoria.nombre);
     const request = {
       name: todo.name,
       id: todo.id,
+      completed:!todo.completed,
       categoria:{id:34,nombre:"El nombre"},
     };
     fetch(HOST_API, {
@@ -118,6 +118,7 @@ console.log(categoria.nombre);
     })
       .then(response => response.json())
       .then((todo) => {
+        console.log(request);
         dispatch({ type: "update-item", item: todo });
       });
   };
@@ -125,7 +126,7 @@ console.log(categoria.nombre);
   const decorationDone = {
     textDecoration: 'line-through'
   };
-  return <div className='container'>
+  return <Fragment >
     <table >
       <thead>
         <tr>
@@ -139,6 +140,7 @@ console.log(categoria.nombre);
           var styles = {color: "purple", fontSize: 15, border:"2px solid purple"}
 
           return <tr key={todo.id} style={styles}>
+            
             <td key={todo.id}>{todo.id}</td>
             <td><input type="checkbox" defaultChecked={todo.completed} onChange={(event) => onChange(event, todo)}></input></td>
             <td onClick={()=> console.log("Hiciste click "+todo.name)}>{todo.name}</td>
@@ -149,7 +151,7 @@ console.log(categoria.nombre);
         })}
       </tbody>
     </table>
-  </div>
+  </Fragment>
 }
 
 function reducer(state, action) {

@@ -8,7 +8,6 @@ const initialState = {
   categoria: { list: [], item: {} }
 };
 const Store = createContext(initialState)
-
 const Form = () => {
   const formRef = useRef(null);
   const { dispatch, state: { categoria } } = useContext(Store);
@@ -140,19 +139,18 @@ const List = () => {
             <td onClick={()=> console.log("Hiciste click "+categoria.nombre)}>{categoria.nombre}</td>
             <td><button className="btn btn-danger mx-3" onClick={() => onDelete(categoria.id)}>Eliminar</button></td>
             <td><button className='btn btn-primary' onClick={() => {
-              return onEdit(categoria)}}>Editar</button></td>
-              
-              
+              return onEdit(categoria)}}>Editar</button></td>  
+                           
           </tr>
-          <Formulario Categoria={categoria.nombre}/>
+           <Formulario />     
            </div>
           
         })}
       </tbody>
+      
     </table>
   </div>
 }
-
 
 function reducer(state, action) {
   switch (action.type) {
@@ -190,7 +188,6 @@ function reducer(state, action) {
       return state;
   }
 }
-
 const StoreProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -202,8 +199,8 @@ const StoreProvider = ({ children }) => {
 
 const App=()=>{
   return(<StoreProvider>
-    <Form />
-    <List />
+   <Form />
+   <List />
    
   </StoreProvider>);
 }
